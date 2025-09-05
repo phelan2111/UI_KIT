@@ -22,7 +22,7 @@ function ThemeColor() {
   useDocumentTitle(title.title);
 
   return (
-    <Box className="dark">
+    <Box className="dark" id="wrapper">
       <Outlet />
       <Toast />
       <Modal />

@@ -9,7 +9,7 @@ export const Path: Record<string, TPath> = {
     url: "/",
   },
   UI_Kit: {
-    title: "UI-kit",
+    title: "UI-KIT",
     url: "/ui-kit",
   },
 };
