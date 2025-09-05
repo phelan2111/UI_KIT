@@ -7,8 +7,8 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-		crypto: "crypto-browserify",
-
+      ui: path.resolve(__dirname, "./src/components/ui"),
+      crypto: "crypto-browserify",
     },
   },
   build: {
@@ -30,13 +30,13 @@ export default defineConfig({
         entryFileNames: "assets/js/[name]-[hash].js",
         manualChunks: {
           react: ["react", "react-dom"],
-          utils: ["lodash", "dayjs"],
+          utils: ["dayjs"],
         },
       },
     },
   },
   optimizeDeps: {
-    include: ["react", "react-dom", 'crypto-browserify'],
+    include: ["react", "react-dom", "crypto-browserify"],
   },
   server: {
     port: 5173,
