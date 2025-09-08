@@ -34,6 +34,8 @@ export interface ITextFieldProps
   messageError?: string;
   classHelperText?: string;
   extendsLabel?: ReactNode;
+  iconClear?: ReactNode;
+  clear?: boolean;
 }
 
 function TextField({
@@ -42,6 +44,23 @@ function TextField({
   name = "",
   classHelperText = "text-[#F04438]",
   type = "text",
+  iconClear = (
+    <svg
+      width="13"
+      height="12"
+      viewBox="0 0 13 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M2.20467 0.29387C1.81414 -0.0966545 1.18098 -0.0966545 0.790452 0.29387C0.399928 0.684394 0.399928 1.31756 0.790452 1.70808L5.08383 6.00146L0.791698 10.2936C0.401174 10.6841 0.401174 11.3173 0.791698 11.7078C1.18222 12.0983 1.81539 12.0983 2.20591 11.7078L6.49804 7.41567L10.7902 11.7078C11.1807 12.0983 11.8139 12.0983 12.2044 11.7078C12.5949 11.3173 12.5949 10.6841 12.2044 10.2936L7.91225 6.00146L12.2056 1.70808C12.5962 1.31756 12.5962 0.684394 12.2056 0.29387C11.8151 -0.0966545 11.1819 -0.0966545 10.7914 0.29387L6.49804 4.58724L2.20467 0.29387Z"
+        fill="#212121"
+      />
+    </svg>
+  ),
+  clear = false,
   required = false,
   ...props
 }: ITextFieldProps) {
@@ -150,6 +169,18 @@ function TextField({
             props?.onChange?.(e.currentTarget.value);
           }}
         />
+        {clear && !Helper.isEmpty(value) && (
+          <Box
+            className="cursor-pointer size-4 flex items-center justify-center"
+            aria-hidden
+            onClick={() => {
+              setValue("");
+            }}
+          >
+            {iconClear}
+          </Box>
+        )}
+
         {isIconEnd && props.icon && props.icon.node}
       </div>
       {!Helper.isEmpty(messageE) && (

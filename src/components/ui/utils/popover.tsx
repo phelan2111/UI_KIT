@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Fragment,
   useEffect,
@@ -14,22 +15,34 @@ type RenderContentProps = {
 interface IPopoverProps {
   children?: ReactNode;
   className?: string;
+  isOpen?: boolean;
   renderContent?: (renderContentProps: RenderContentProps) => ReactNode;
   renderChildren?: (renderContentProps: RenderContentProps) => ReactNode;
+  onClose?: VoidFunction;
+  onChange?: (dataItem: boolean) => void;
 }
 function Popover({
   className = "bg-white text-normal py-2 rounded-sm -bottom-1 left-0",
+  isOpen = false,
   ...props
 }: IPopoverProps) {
-  const [open, setOpen] = useState<boolean | undefined>(undefined);
+  const [open, setOpen] = useState<boolean | undefined>(isOpen);
   const ref = useRef<HTMLDivElement>(null);
   const refPopper = useRef<HTMLDivElement>(null);
 
   const handleOpen = () => {
-    setOpen(true);
+    if (props?.onChange) {
+      props.onChange?.(true);
+    } else {
+      setOpen(true);
+    }
   };
   const handleClose = () => {
-    setOpen(false);
+    if (props?.onChange) {
+      setOpen(false);
+    } else {
+      props.onChange?.(false);
+    }
   };
 
   useLayoutEffect(() => {
@@ -91,12 +104,20 @@ function Popover({
         refPopper.current &&
         !refPopper.current.contains(event.target as Node)
       ) {
-        setOpen(false);
+        if (props?.onChange) {
+          props.onChange?.(false);
+        } else {
+          setOpen(false);
+        }
+        props?.onClose?.();
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  useEffect(() => {
+    setOpen(isOpen);
+  }, [isOpen]);
 
   return (
     <Fragment>

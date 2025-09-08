@@ -59,11 +59,18 @@ function UI_KIT() {
                 <TextField
                   maxLength={100}
                   label="Basic"
+                  clear
                   placeholder="Enter..."
                 />
                 <TextField
                   messageError="This filed required"
                   label="Error"
+                  placeholder="Enter..."
+                />
+                <TextField
+                  label="Clear"
+                  defaultValue="Can change icon clear..."
+                  clear
                   placeholder="Enter..."
                 />
                 <TextField disabled label="Disable" />

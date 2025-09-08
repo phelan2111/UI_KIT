@@ -1,4 +1,10 @@
-import { useMemo, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import TextField from "./textField";
 import { Helper } from "@/utils/helper";
 import { useFormContext } from "react-hook-form";
@@ -7,6 +13,7 @@ import Menu from "ui/dataDisplay/menu";
 import MenuItem from "ui/dataDisplay/menuItem";
 import Empty from "../dataDisplay/empty";
 import Box from "../layout/box";
+import { Logger } from "@/utils/logger";
 export type SelectProps = {
   className?: string;
   label?: string;
@@ -28,6 +35,7 @@ export type SelectProps = {
   disabled?: boolean;
   placeholder?: string;
   messageError?: string;
+  value?: ItemSelect;
 };
 type RenderLabelItemProps = {
   label: string;
@@ -39,6 +47,11 @@ export type ItemSelect = {
   value: string | number;
   label: string;
   renderLabel?: (renderProps: RenderLabelItemProps) => ReactNode;
+};
+const KEY_BOARD = {
+  ENTER: "Enter",
+  DOWN: "ArrowDown",
+  UP: "ArrowUp",
 };
 function Select({
   className = "pointer-events-none",
@@ -68,8 +81,6 @@ function Select({
   ...props
 }: SelectProps) {
   const form = useFormContext();
-
-  const [keyFresh, setKeyFresh] = useState<string>(Helper.randomKey());
 
   const messageError: string = useMemo(() => {
     return (
@@ -105,10 +116,19 @@ function Select({
   const [dataSelectState, setDataSelectState] = useState<
     ItemSelect | undefined
   >(initialValue);
+  const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
+
+  const [searchValue, setSearchValue] = useState<string>(
+    dataSelectState?.label ?? ""
+  );
+  const [itemFocus, setItemFocus] = useState<ItemSelect | undefined>(
+    dataSelectState
+  );
 
   const handleSelect = (dataItem: ItemSelect) => {
     setDataSelectState(dataItem);
-    setKeyFresh(Helper.randomKey());
     props.onChange?.(dataItem);
     form?.setValue(name, dataItem, {
       shouldValidate: true,
@@ -116,6 +136,70 @@ function Select({
       shouldTouch: true,
     });
   };
+  const handlerKeydown = useCallback(
+    (events: KeyboardEvent) => {
+      Logger.debug("addEventListener keydown", events.code);
+      const { index, isExist } = Helper.findItem(
+        props.data,
+        "value",
+        itemFocus?.value ?? ""
+      );
+
+      function handlerIndex(isDown: boolean) {
+        let indexPlus = isDown ? index + 1 : index - 1;
+        if (isExist) {
+          if (indexPlus === props.data.length) {
+            indexPlus = 0;
+          }
+          if (indexPlus < 0) {
+            indexPlus = props.data.length - 1;
+          }
+        } else {
+          indexPlus = 0;
+        }
+        return indexPlus;
+      }
+      if (events.code === KEY_BOARD.DOWN) {
+        setItemFocus(props.data[handlerIndex(true)]);
+      }
+      if (events.code === KEY_BOARD.UP) {
+        setItemFocus(props.data[handlerIndex(false)]);
+      }
+      if (events.code === KEY_BOARD.ENTER) {
+        if (itemFocus?.value) {
+          setDataSelectState(itemFocus);
+          setIsOpen(false);
+          setSearchValue(itemFocus.label);
+        }
+      }
+    },
+    [itemFocus, props]
+  );
+
+  useEffect(() => {
+    if (!Helper.isEmpty(props.value)) {
+      setDataSelectState(props.value);
+    }
+  }, [props.value]);
+  useEffect(() => {
+    if (isFocus) {
+      document.addEventListener("keydown", handlerKeydown);
+    }
+    return () => {
+      document.removeEventListener("keydown", handlerKeydown);
+    };
+  }, [handlerKeydown, isFocus]);
+  useEffect(() => {
+    if (dataSelectState) {
+      setSearchValue(dataSelectState.label);
+    }
+  }, [dataSelectState]);
+  useEffect(() => {
+    if (!isFocus && !isSelected && dataSelectState) {
+      setSearchValue(dataSelectState?.label);
+      props.onChange?.(dataSelectState);
+    }
+  }, [isFocus, isSelected, dataSelectState, props]);
 
   return (
     <div
@@ -137,6 +221,13 @@ function Select({
         </Box>
       )}
       <Popover
+        isOpen={isOpen}
+        onChange={(dataItem) => {
+          setIsOpen(dataItem);
+          if (dataItem) {
+            setIsSelected(false);
+          }
+        }}
         className={classNamePopper}
         renderContent={({ onClose }) => {
           return (
@@ -157,14 +248,24 @@ function Select({
                       "value",
                       dataSelectState?.value ?? ""
                     );
+                    const { isEqual: isEqualFocus } = Helper.compareItem(
+                      item,
+                      "value",
+                      itemFocus?.value ?? ""
+                    );
                     return (
                       <MenuItem
                         className={`${classMenuItem} ${
-                          isEqual ? classActive : "text-primary_dark"
+                          isEqual
+                            ? classActive
+                            : isEqualFocus
+                            ? "bg-[#DCDCDC]/50"
+                            : "text-primary_dark"
                         }`}
                         onClick={() => {
                           handleSelect(item);
                           onClose();
+                          setIsSelected(true);
                         }}
                         key={item.value}
                       >
@@ -183,15 +284,18 @@ function Select({
               <div className="w-full">
                 <TextField
                   onBlur={() => {
-                    if (dataSelectState) {
-                      setKeyFresh(Helper.randomKey());
-                    }
+                    setIsFocus(false);
                   }}
-                  onChange={props.onChangeInput}
+                  onFocus={() => {
+                    setIsFocus(true);
+                  }}
+                  onChange={(dataItem) => {
+                    props.onChangeInput?.(dataItem);
+                    setSearchValue?.(dataItem);
+                  }}
+                  value={searchValue}
                   messageError={messageError}
                   placeholder={props.placeholder}
-                  key={keyFresh}
-                  defaultValue={dataSelectState?.label}
                   disabled={props.disabled}
                   className="hover:!shadow-none focus-within:!shadow-none !border-transparent"
                   classNameInput={classNameInput}
