@@ -6,6 +6,8 @@ import TextField from "@/components/ui/inputs/textField";
 import Select, { type ItemSelect } from "@/components/ui/inputs/select";
 import { Helper } from "@/utils/helper";
 import Autocomplete from "@/components/ui/inputs/autocomplete";
+import { Checkbox, CheckboxGroup } from "@/components/ui/inputs/checkbox";
+import { Radio, RadioGroup } from "@/components/ui/inputs/radio";
 
 type TWrapperProps = {
   title: string;
@@ -150,6 +152,129 @@ function UI_KIT() {
                   data={options}
                 />
                 <Autocomplete label="Auto complete" data={options} />
+              </Box>
+            </Box>
+          </Box>
+          <Box>
+            <Typography.Headings type="h5" className="text-[18px]">
+              2. Checkbox
+            </Typography.Headings>
+            <Box className="px-3">
+              <Box className="p-3 grid grid-cols-3 gap-x-4 gap-y-10">
+                <Checkbox name="checkbox_1" label="Basic" />
+                <Checkbox
+                  name="checkbox_2"
+                  label="Update position label"
+                  labelPosition="after"
+                />
+                <Checkbox
+                  name="checkbox_2"
+                  label="Default checked"
+                  defaultValue={true}
+                  labelPosition="after"
+                />
+                <Checkbox
+                  name="checkbox_3"
+                  label="Error"
+                  messageError="This field required"
+                  defaultValue={true}
+                  labelPosition="after"
+                />
+                <Checkbox
+                  name="checkbox_4"
+                  label="Disabled"
+                  disabled
+                  defaultValue={true}
+                  labelPosition="after"
+                />
+                <Checkbox
+                  name="checkbox_4"
+                  label="Update icon"
+                  icon={
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="white"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M1.2002 6.99995C1.2002 3.7967 3.79694 1.19995 7.0002 1.19995C8.46816 1.19995 9.80875 1.7453 10.8304 2.64446L2.47876 10.633C1.67889 9.6388 1.2002 8.37528 1.2002 6.99995ZM3.17009 11.3555C4.19174 12.2546 5.53229 12.8 7.0002 12.8C10.2034 12.8 12.8002 10.2032 12.8002 6.99995C12.8002 5.62467 12.3215 4.3612 11.5217 3.36702L3.17009 11.3555ZM7.0002 0.199951C3.24466 0.199951 0.200195 3.24442 0.200195 6.99995C0.200195 10.7555 3.24466 13.8 7.0002 13.8C10.7557 13.8 13.8002 10.7555 13.8002 6.99995C13.8002 3.24442 10.7557 0.199951 7.0002 0.199951Z"
+                        fill="white"
+                      />
+                    </svg>
+                  }
+                  defaultValue={true}
+                  labelPosition="after"
+                />
+                <CheckboxGroup
+                  label="Checkbox group"
+                  name="checkbox_group_1"
+                  data={[
+                    {
+                      label: "option 1",
+                      value: "option1",
+                    },
+                    {
+                      label: "option 2",
+                      value: "option2",
+                      disabled: true,
+                    },
+                    {
+                      label: "option 3",
+                      value: "option3",
+                    },
+                  ]}
+                />
+              </Box>
+            </Box>
+          </Box>
+          <Box>
+            <Typography.Headings type="h5" className="text-[18px]">
+              3. Radio
+            </Typography.Headings>
+            <Box className="px-3">
+              <Box className="p-3 grid grid-cols-3 gap-x-4 gap-y-10">
+                <Radio label="Basic" name="radio_1" />
+                <Radio
+                  label="Update position label"
+                  name="radio_2"
+                  labelPosition="after"
+                />
+                <Radio
+                  disabled
+                  label="Disabled"
+                  name="radio_3"
+                  labelPosition="after"
+                />
+                <Radio
+                  messageError="This field required
+"
+                  label="Error"
+                  name="radio_3"
+                  labelPosition="after"
+                />
+                <RadioGroup
+                  name="radioGroup_1"
+                  label="Radio group"
+                  data={[
+                    {
+                      label: "option 1",
+                      value: "option1",
+                    },
+                    {
+                      label: "option 2",
+                      value: "option2",
+                      disabled: true,
+                    },
+                    {
+                      label: "option 3",
+                      value: "option3",
+                    },
+                  ]}
+                />
               </Box>
             </Box>
           </Box>

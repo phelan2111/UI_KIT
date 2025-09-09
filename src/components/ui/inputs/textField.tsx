@@ -69,8 +69,15 @@ function TextField({
   const initialValue = useMemo(() => {
     return props.defaultValue ?? form?.getValues()?.[name];
   }, [props.defaultValue, form, name]);
+  const messageError: string = useMemo(() => {
+    return (
+      props.messageError ??
+      form?.formState.errors?.[name]?.message?.toString() ??
+      ""
+    );
+  }, [form?.formState.errors, name, props.messageError]);
 
-  const [messageE, setMessageE] = useState<string>("");
+  const [messageE, setMessageE] = useState<string>(messageError);
   const [value, setValue] = useState<string>(initialValue);
 
   const classNameBlock = useMemo(() => {
@@ -98,6 +105,7 @@ function TextField({
 
   const handleChange = (valueInput: string) => {
     setValue(valueInput);
+    setMessageE("");
     if (!Helper.isEmpty(name)) {
       form?.setValue(name, valueInput, {
         shouldValidate: true,

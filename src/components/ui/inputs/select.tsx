@@ -119,16 +119,17 @@ function Select({
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
-
   const [searchValue, setSearchValue] = useState<string>(
     dataSelectState?.label ?? ""
   );
   const [itemFocus, setItemFocus] = useState<ItemSelect | undefined>(
     dataSelectState
   );
+  const [messageE, setMessageE] = useState<string>(messageError);
 
   const handleSelect = (dataItem: ItemSelect) => {
     setDataSelectState(dataItem);
+    setMessageE("");
     props.onChange?.(dataItem);
     form?.setValue(name, dataItem, {
       shouldValidate: true,
@@ -200,6 +201,13 @@ function Select({
       props.onChange?.(dataSelectState);
     }
   }, [isFocus, isSelected, dataSelectState, props]);
+  useEffect(() => {
+    if (!Helper.isEmpty(props?.messageError)) {
+      setMessageE(props.messageError as string);
+    } else {
+      setMessageE(form?.formState.errors?.[name]?.message as string);
+    }
+  }, [form?.formState.errors, name, props.messageError]);
 
   return (
     <div
@@ -294,7 +302,7 @@ function Select({
                     setSearchValue?.(dataItem);
                   }}
                   value={searchValue}
-                  messageError={messageError}
+                  messageError={messageE}
                   placeholder={props.placeholder}
                   disabled={props.disabled}
                   className="hover:!shadow-none focus-within:!shadow-none !border-transparent"
